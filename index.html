@@ -176,6 +176,11 @@
                 checkResult(i, j);
             }
             // ket qua
+            noticeWinner();
+        }
+
+        // thong bao ket qua
+        function noticeWinner(){
             if (result[0] == 2) {
                 alert("Player 'x' won !");
                 score[0]++;
@@ -211,6 +216,7 @@
         function setLocalStorageData() {
             localStorage.setItem('Scoreboard', JSON.stringify(score));
         }
+        
         // lay du lieu tu local ra
         function getLocalStorageData() {
             if (window.localStorage.getItem('Scoreboard')) {
