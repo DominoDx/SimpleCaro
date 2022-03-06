@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-size: 20px;
+        }
+
+        h3 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        p {
+            position: relative;
+            left: 44%;
+        }
+
+        input {
+            position: relative;
+            left: 44.5%;
+            top: 30px;
+        }
+
+        h4 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Ca-ro Game Simple</h3>
+    <hr>
+    <p id="carogame"></p>
+    <input type="button" value="Change Value" onclick="changeValue();">
+    <input type="button" value="Reset Score" onclick="resetScore();">
+    <h4>Player X:&nbsp;&nbsp; <span id="playerx"></span>&nbsp;&nbsp; - &nbsp;&nbsp;<span
+            id="playero"></span>&nbsp;&nbsp; :Player O</h4>
+    <script>
+        const game = document.getElementById("carogame");
+        const scoreX = document.getElementById("playerx");
+        const scoreY = document.getElementById("playero");
+        let board = [];
+        let board2 = [];
+        let player;
+        let count = 0;
+        let position = [null, null];
+        let result = [0, 0];
+        let score = [0, 0];
+        // main
+        function main() {
+            getLocalStorageData();
+            createBoard();
+            drawBoard();
+        }
+
+        //run
+        main();
+
+        // tao bang
+        function createBoard() {
+            for (let i = 0; i < 5; i++) {
+                board[i] = [".", ".", ".", ".", "."];
+                board2[i] = [false, false, false, false, false]
+            }
+        }
+
+        // ve bang
+        function drawBoard() {
+            let data = "";
+            for (let i = 0; i < 5; i++) {
+                data += "</br></br>";
+                for (let j = 0; j < 5; j++) {
+                    data += board[i][j] + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ";
+                }
+            }
+            game.innerHTML = data;
+            scoreX.innerHTML = score[0];
+            scoreY.innerHTML = score[1];
+        }
+
+        // player section
+        function changeValue() {
+            count++;
+            (count % 2 === 0) ? player = 2 : player = 1;
+            do {
+                position[0] = parseInt(prompt("Player " + ((player == 1) ? "'x'" : "'o'") + ", Enter position X: "));
+                position[1] = parseInt(prompt("Player " + ((player == 1) ? "'x'" : "'o'") + ", Enter position Y: "));
+                if (position[0] < 0) {
+                    alert("position X < 0, please enter again !(0 - 4)");
+                }
+                if (position[1] < 0) {
+                    alert("position Y < 0, please enter again !(0 - 4)");
+                }
+                if (position[0] > 4) {
+                    alert("position X > 4, please enter again !(0 - 4)");
+                }
+                if (position[1] > 4) {
+                    alert("position Y < 0, please enter again !(0 - 4)");
+                }
+                if (!position[0] && position[0] !== 0) {
+                    alert("You haven't enter position X, please enter again !(0 - 4)");
+                }
+                if (!position[1] && position[1] !== 0) {
+                    alert("You haven't enter position  Y, please enter again !(0 - 4)");
+                }
+                if (position[0] > 0 && position[0] < 5 && position[1] > 0 && position[1] < 5) {
+                    if (board2[position[0]][position[1]]) alert("This position has filled, please enter again!");
+                } else continue;
+            } while (!position[0] && position[0] !== 0 || !position[1] && position[1] !== 0 || position[0] < 0 || position[1] < 0 || position[0] > 4 || position[1] > 4 || board2[position[0]][position[1]])
+
+            // insert player symbol
+            board[position[0]][position[1]] = (player === 1) ? "x" : "o";
+            board2[position[0]][position[1]] = true;
+            drawBoard();
+            checkWinner(position[0], position[1]);
+        }
+
+        // check winner
+        function checkWinner(i, j) {
+
+            // check hang ngang
+            if (j == 0) {
+                if (board[i][j] == board[i][j + 1])
+                    checkResult(i, j);
+            } else if (j == 4) {
+                if (board[i][j] == board[i][j - 1])
+                    checkResult(i, j);
+            }
+            else if (board[i][j] == board[i][j - 1] || board[i][j] == board[i][j + 1]) {
+                checkResult(i, j);
+            }
+
+            // check hang doc
+            if (i == 0) {
+                if (board[i][j] == board[i + 1][j])
+                    checkResult(i, j);
+            } else if (j == 4) {
+                if (board[i][j] == board[i - 1][j])
+                    checkResult(i, j);
+            }
+            else if (board[i][j] == board[i - 1][j] || board[i][j] == board[i + 1][j]) {
+                checkResult(i, j);
+            }
+            // check hang cheo tu trai qua phai
+            if (i == 0 || j == 0 || i == 0 && j == 0) {
+                if (board[i][j] == board[i + 1][j + 1])
+                    checkResult(i, j);
+            } else if (j == 4 || i == 4 || i == 4 && j == 4) {
+                if (board[i][j] == board[i - 1][j - 1])
+                    checkResult(i, j);
+            } else if (board[i][j] == board[i - 1][j - 1] || board[i][j] == board[i + 1][j + 1]) {
+                    checkResult(i, j);
+            }
+            //check hang cheo tu phai qua trai
+            if (i == 0 || j == 4 || i == 0 && j == 4) {
+                if (board[i][j] == board[i + 1][j - 1])
+                    checkResult(i, j);
+            } else if (j == 0 || i == 4 || i == 4 && j == 0) {
+                if (board[i][j] == board[i - 1][j + 1])
+                    checkResult(i, j);
+            } else if (board[i][j] == board[i - 1][j + 1] || board[i][j] == board[i + 1][j - 1]) {
+                checkResult(i, j);
+            }
+            // ket qua
+            if (result[0] == 2) {
+                alert("Player 'x' won !");
+                score[0]++;
+                resetMatch();
+            }
+            if (result[1] == 2) {
+                alert("Player 'o' won !");
+                score[1]++;
+                resetMatch();
+            }
+        }
+
+        //check X, O result
+        function checkResult(i, j) {
+            if (board[i][j] == "x") {
+                result[0]++;
+            }
+            if (board[i][j] == "o") {
+                result[1]++;
+            }
+        }
+
+        // reset
+        function resetMatch() {
+            setLocalStorageData();
+            createBoard();
+            drawBoard();
+            count = 0;
+            result = [0, 0];
+        }
+
+        // gan du lieu vao local
+        function setLocalStorageData() {
+            localStorage.setItem('Scoreboard', JSON.stringify(score));
+        }
+        // lay du lieu tu local ra
+        function getLocalStorageData() {
+            if (window.localStorage.getItem('Scoreboard')) {
+                let data = window.localStorage.getItem('Scoreboard');
+                score[0] = parseInt(data[1]);
+                score[1] = parseInt(data[3]);
+            }
+        }
+
+        // nut reset ty so
+        function resetScore(){
+            score = [0,0];
+            resetMatch();
+        }
+
+    </script>
+</body>
+
+</html>
